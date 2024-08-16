@@ -1,34 +1,5 @@
 
-#include <pthread.h>
-#include <stdio.h>
-#include <unistd.h>
-#include <time.h>
-#include <sys/time.h>
-#include <stdlib.h>
-
-typedef struct s_philo
-{
-    int id;
-    int x_ate;
-    int l_fork_id;
-    int r_fork_id;
-    struct s_rule *rule;
-    long long t_last_meal;
-    pthread_t thread_id;
-} t_philo;
-
-typedef struct s_rule
-{
-    int time_eat;
-    int time_sleep;
-    int time_think;
-    int time_die;
-    int nb_philos;
-    int finish;
-    pthread_mutex_t forks[200];
-    pthread_mutex_t meal_check;
-    t_philo philos[200];
-} t_rule;
+#include "../header/philo.h"
 
 long long timestamp(void)
 {
@@ -68,6 +39,7 @@ void *philosopher(void *p)
     }
     return NULL;
 }
+
 void verify_death(t_rule *rule)
 {
     // MURIO?

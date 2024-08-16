@@ -1,40 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <sys/wait.h>
-#include <semaphore.h>
-#include <fcntl.h>
-#include <time.h>
-#include <sys/time.h>
-#include <pthread.h>
-
-#define SEM_FORKS "/forks_semaphore"
-#define SEM_MEALCK "/philo_mealcheck"
-#define NUM_FORKS 5
-typedef struct s_philo
-{
-    pid_t id;
-    int x_ate;
-    int l_fork_id;
-    int r_fork_id;
-    struct s_rule *rule;
-    long long t_last_meal;
-    pthread_t death_check;
-} t_philo;
-
-typedef struct s_rule
-{
-    int time_eat;
-    int time_sleep;
-    int time_think;
-    int time_die;
-    int nb_philos;
-    int finish;
-    sem_t *forks;
-    sem_t *meal_check;
-    t_philo philos[200];
-} t_rule;
+#include "../header/philo_bonus.h"
 
 const char *colors[] = {
     "\033[0;31m", // Rojo
@@ -86,14 +50,14 @@ void philosopher(int id, t_philo *philo)
     {
         // Tomar tenedores (esperar a que haya dos disponibles)
         sem_wait(rule->forks);
-        printf("%s%lld %d has taken a fork\033[0m\n", "\033[0;32m", timestamp(), philo->id);
+        printf("%s%lld %d has taken a fork\033[0m\n", "\033[0;32m", timestamp(), id);
         sem_wait(rule->forks);
-        printf("%s%lld %d has taken a fork\033[0m\n", "\033[0;32m", timestamp(), philo->id);
+        printf("%s%lld %d has taken a fork\033[0m\n", "\033[0;32m", timestamp(), id);
         sem_wait(rule->meal_check);
-        printf("%s%lld %d is eating\033[0m\n", "\033[0;32m", timestamp(), philo->id);
+        printf("%s%lld %d is eating\033[0m\n", "\033[0;32m", timestamp(), id);
         philo->t_last_meal = timestamp();
         sem_post(rule->meal_check);
-        sleep(rule->time_eat); // Simula el tiempo de comer
+        usleep(rule->time_eat); // Simula el tiempo de comer
         // Devolver tenedores
         sem_post(rule->forks);
         sem_post(rule->forks);
