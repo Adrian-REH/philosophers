@@ -6,7 +6,7 @@
 /*   By: adherrer <adherrer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/17 16:10:29 by adherrer          #+#    #+#             */
-/*   Updated: 2024/08/17 17:15:36 by adherrer         ###   ########.fr       */
+/*   Updated: 2024/08/17 19:40:09 by adherrer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,14 +22,13 @@ void *verify_death(void *v_philo)
     while (rule->finish == 0)
     {
         sem_wait(rule->meal_check);
-        if ((timestamp() - (philo->t_last_meal)) > rule->time_die)
+        if ((timestamp() - (philo->t_last_meal)) >= rule->time_die)
         {
             printf("%s%lld %d DIED\033[0m\n", "\033[0;31m", timestamp(), philo->id);
             rule->finish = 1;
             exit(127);
         }
         sem_post(rule->meal_check);
-        usleep(1);
     }
     return NULL;
 }
@@ -43,7 +42,6 @@ void philosopher(int id, t_philo *philo)
     pthread_create(&(philo->death_check), NULL, verify_death, philo);
     while (!(rule->finish))
     {
-        // Tomar tenedores (esperar a que haya dos disponibles)
         sem_wait(rule->forks);
         printf("%s%lld %d has taken a fork\033[0m\n", "\033[0;32m", timestamp(), id);
         sem_wait(rule->forks);
@@ -51,12 +49,25 @@ void philosopher(int id, t_philo *philo)
         sem_wait(rule->meal_check);
         printf("%s%lld %d is eating\033[0m\n", "\033[0;32m", timestamp(), id);
         philo->t_last_meal = timestamp();
-        usleep(rule->time_eat);
+        long long i;
+        i = timestamp();
+        while (!(rule->finish))
+        {
+            if ((-i + timestamp()) >= rule->time_eat)
+                break ;
+            usleep(50);
+        }
         sem_post(rule->meal_check);
         sem_post(rule->forks);
         sem_post(rule->forks);
-        usleep(rule->time_sleep);
-        printf("%s %d is thinking\033[0m\n", "\033[0;32m", philo->id);
+        printf("%s %d is thinking\033[0m\n", "\033[0;32m", id);
+        i = timestamp();
+        while (!(rule->finish))
+        {
+            if ((-i + timestamp()) >= rule->time_sleep)
+                break ;
+            usleep(50);
+        }
     }
     pthread_join(philo->death_check, NULL);
     exit(0);
@@ -118,7 +129,6 @@ int main(int argc, char **argv)
             rule.philos[i].rule = &rule;
             philosopher(i, &rule.philos[i]);
         }
-        usleep(100);
         i++;
     }
     ft_finish(&rule);

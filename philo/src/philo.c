@@ -6,7 +6,7 @@
 /*   By: adherrer <adherrer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/17 16:09:17 by adherrer          #+#    #+#             */
-/*   Updated: 2024/08/17 17:04:30 by adherrer         ###   ########.fr       */
+/*   Updated: 2024/08/17 19:38:54 by adherrer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@ void *philosopher(void *v_philo)
 {
     t_philo *philo;
     t_rule *rules;
+    long long i;
 
     philo = (t_philo *)v_philo;
     rules = philo->rule;
@@ -26,16 +27,30 @@ void *philosopher(void *v_philo)
         pthread_mutex_lock(&rules->forks[philo->r_fork_id]); // Lock left fork
         printf("%s%lld %d has taken a fork\033[0m\n", "\033[0;32m", timestamp(), philo->id);
         pthread_mutex_lock(&rules->forks[philo->l_fork_id]); // Lock right fork
+
         pthread_mutex_lock(&(rules->meal_check));
         printf("%s%lld %d has taken a fork\033[0m\n", "\033[0;32m", timestamp(), philo->id);
         philo->t_last_meal = timestamp();
         printf("%s%lld %d is eating\033[0m\n", "\033[0;32m", timestamp(), philo->id);
-        usleep(rules->time_eat);
+        //usleep(rules->time_eat);
+        i = timestamp();
+        while (!(rules->finish))
+        {
+            if ((-i + timestamp()) >= rules->time_eat)
+                break ;
+            usleep(50);
+        }
         pthread_mutex_unlock(&(rules->meal_check));
         pthread_mutex_unlock(&rules->forks[philo->r_fork_id]);
         pthread_mutex_unlock(&rules->forks[philo->l_fork_id]);
-        usleep(rules->time_sleep);
         printf("%s%lld %d is thinking\033[0m\n", "\033[0;32m", timestamp(), philo->id);
+        i = timestamp();
+        while (!(rules->finish))
+        {
+            if ((-i + timestamp()) >= rules->time_sleep)
+                break ;
+            usleep(50);
+        }
     }
     return NULL;
 }
@@ -43,18 +58,21 @@ void *philosopher(void *v_philo)
 void verify_death(t_rule *rule)
 {
     // MURIO?
-    for (int i = 0; i < rule->nb_philos && !(rule->finish); i++)
+    int i;
+    while (1)
     {
-        pthread_mutex_lock(&(rule->meal_check));
-
-        if (-(rule->philos[i].t_last_meal) + timestamp() > rule->time_die)
+        i = -1;
+        while (++i < rule->nb_philos && !(rule->finish))
         {
-            printf("%s%lld %d died\033[0m\n", "\033[0;31m", timestamp() - rule->philos[i].t_last_meal, rule->philos[i].id);
-            rule->finish = 1;
-            return;
+            pthread_mutex_lock(&(rule->meal_check));
+
+            if ((timestamp() - (rule->philos[i].t_last_meal)) >= rule->time_die)
+            {
+                printf("%s%lld %d DIED\033[0m\n", "\033[0;31m", timestamp(), rule->philos[i].id);
+                rule->finish = 1;
+            }
+            pthread_mutex_unlock(&(rule->meal_check));
         }
-        pthread_mutex_unlock(&(rule->meal_check));
-        usleep(100);
     }
 }
 
@@ -79,6 +97,7 @@ static void ft_finish(t_rule *rule)
     while (i < rule->nb_philos)
         pthread_mutex_destroy(&rule->forks[i++]);
 }
+
 int main(int argc, char **argv)
 {
     t_rule rule;
@@ -91,9 +110,9 @@ int main(int argc, char **argv)
     while (i < rule.nb_philos)
     {
         pthread_mutex_init(&rule.forks[i++], NULL);
-        if (pthread_mutex_init(&(rule.meal_check), NULL))
-        return (1);
     }
+    if (pthread_mutex_init(&(rule.meal_check), NULL) == -1)
+        return (1);
     i = 0;
     while (i < rule.nb_philos)
     {
