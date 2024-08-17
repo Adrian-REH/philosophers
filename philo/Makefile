@@ -6,7 +6,7 @@
 #    By: adherrer <adherrer@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/07/20 12:20:24 by adherrer          #+#    #+#              #
-#    Updated: 2024/08/02 17:55:25 by adherrer         ###   ########.fr        #
+#    Updated: 2024/08/17 16:53:33 by adherrer         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -19,7 +19,7 @@ CFLAGS = -Werror -Wall -Wextra -g
 RM = rm -rf
 
 
-SRCS = 	src/philo.c\
+SRCS = 	src/philo.c src/time_util.c
 		
 OBJ =  $(SRCS:.c=.o)
 

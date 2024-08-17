@@ -1,20 +1,17 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   philo_bonus.c                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: adherrer <adherrer@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/08/17 16:10:29 by adherrer          #+#    #+#             */
+/*   Updated: 2024/08/17 17:15:36 by adherrer         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../header/philo_bonus.h"
 
-const char *colors[] = {
-    "\033[0;31m", // Rojo
-    "\033[0;32m", // Verde
-    "\033[0;33m", // Amarillo
-    "\033[0;34m", // Azul
-    "\033[0;35m", // Magenta
-    "\033[0;36m", // Cian
-};
-long long timestamp(void)
-{
-    struct timeval t;
-
-    gettimeofday(&t, NULL);
-    return ((t.tv_sec * 1000) + (t.tv_usec / 1000));
-}
 void *verify_death(void *v_philo)
 {
     t_philo *philo;
@@ -22,21 +19,21 @@ void *verify_death(void *v_philo)
 
     philo = (t_philo *)v_philo;
     rule = philo->rule;
-
-    // MURIO?
-    sem_wait(rule->meal_check);
-
-    if (-(philo->t_last_meal) + timestamp() > rule->time_die)
+    while (rule->finish == 0)
     {
-        printf("%s%lld %d DIED\033[0m\n", "\033[0;31m", timestamp() - philo->t_last_meal, philo->id);
-        rule->finish = 1;
+        sem_wait(rule->meal_check);
+        if ((timestamp() - (philo->t_last_meal)) > rule->time_die)
+        {
+            printf("%s%lld %d DIED\033[0m\n", "\033[0;31m", timestamp(), philo->id);
+            rule->finish = 1;
+            exit(127);
+        }
         sem_post(rule->meal_check);
-        exit(1);
+        usleep(1);
     }
-    sem_post(rule->meal_check);
-    usleep(100);
     return NULL;
 }
+
 void philosopher(int id, t_philo *philo)
 {
     t_rule *rule;
@@ -44,8 +41,6 @@ void philosopher(int id, t_philo *philo)
     rule = philo->rule;
     philo->t_last_meal = timestamp();
     pthread_create(&(philo->death_check), NULL, verify_death, philo);
-    if (id % 2)
-        usleep(15000);
     while (!(rule->finish))
     {
         // Tomar tenedores (esperar a que haya dos disponibles)
@@ -56,53 +51,64 @@ void philosopher(int id, t_philo *philo)
         sem_wait(rule->meal_check);
         printf("%s%lld %d is eating\033[0m\n", "\033[0;32m", timestamp(), id);
         philo->t_last_meal = timestamp();
+        usleep(rule->time_eat);
         sem_post(rule->meal_check);
-        usleep(rule->time_eat); // Simula el tiempo de comer
-        // Devolver tenedores
         sem_post(rule->forks);
         sem_post(rule->forks);
-
-        printf("%sFilósofo %d está pensando.\n\033[0m", "\033[0;31m", id);
-        long long i;
-
-        i = timestamp();
-        while (!(rule->finish))
-        {
-            if (-i + timestamp() >= rule->time_sleep)
-                break;
-            usleep(50);
-        }
+        usleep(rule->time_sleep);
         printf("%s %d is thinking\033[0m\n", "\033[0;32m", philo->id);
     }
     pthread_join(philo->death_check, NULL);
-    if (rule->finish)
-        exit(1);
     exit(0);
+}
+
+void init(t_rule *rule,char **argv)
+{
+    rule->nb_philos = atoi(argv[1]);
+    rule->time_die = atoi(argv[2]);
+    rule->time_eat = atoi(argv[3]);
+    rule->time_sleep = atoi(argv[4]);
+    rule->time_think = 0;
+    rule->finish = 0;
+    sem_unlink(SEM_FORKS);
+    sem_unlink(SEM_MEALCK);
+    rule->forks = sem_open(SEM_FORKS, O_CREAT, 0644, rule->nb_philos);
+    rule->meal_check = sem_open(SEM_MEALCK, O_CREAT, 0644, 1);
+}
+
+void ft_finish(t_rule *rule)
+{
+    int status;
+
+    for (int i = 0; i < rule->nb_philos; i++)
+    {
+        waitpid(rule->philos[i].id, &status, 0);
+        if (status != 0)
+        {
+            i = -1;
+            while (++i < rule->nb_philos)
+                kill(rule->philos[i].id, 15);
+            break;
+        }
+    }
+    sem_close(rule->forks);
+    sem_close(rule->meal_check);
+    sem_unlink(SEM_FORKS);
+    sem_unlink(SEM_MEALCK);
 }
 
 int main(int argc, char **argv)
 {
     t_rule rule;
-    int status;
+    int i;
 
     if (argc != 5)
         return (0);
-    rule.nb_philos = atoi(argv[1]);
-    rule.time_die = atoi(argv[2]);
-    rule.time_eat = atoi(argv[3]);
-    rule.time_sleep = atoi(argv[4]);
-    rule.time_think = 0;
-    rule.finish = 0;
-    sem_unlink(SEM_FORKS);
-    sem_unlink(SEM_MEALCK);
-    rule.forks = sem_open(SEM_FORKS, O_CREAT, 0644, rule.nb_philos);
-    rule.meal_check = sem_open(SEM_MEALCK, O_CREAT, 0644, 1);
+    init(&rule, argv);
     if (rule.forks == SEM_FAILED || rule.meal_check == SEM_FAILED)
-    {
-        perror("sem_open failed");
-        exit(EXIT_FAILURE);
-    }
-    for (int i = 0; i < rule.nb_philos; i++)
+        (perror("sem_open failed"), exit(EXIT_FAILURE));
+    i = 0;
+    while (i < rule.nb_philos)
     {
         rule.philos[i].id = fork();
         if (rule.philos[i].id == -1)
@@ -113,24 +119,8 @@ int main(int argc, char **argv)
             philosopher(i, &rule.philos[i]);
         }
         usleep(100);
+        i++;
     }
-
-    for (int i = 0; i < rule.nb_philos; i++)
-    {
-        waitpid(rule.philos[i].id, &status, 0);
-        if (status != 0)
-        {
-            i = -1;
-            while (++i < rule.nb_philos)
-                kill(rule.philos[i].id, 15);
-            break;
-        }
-    }
-
-    sem_close(rule.forks);
-    sem_close(rule.meal_check);
-    sem_unlink(SEM_FORKS);
-    sem_unlink(SEM_MEALCK);
-
+    ft_finish(&rule);
     return 0;
 }

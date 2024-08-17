@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   philo_bonus.h                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: adherrer <adherrer@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/08/17 16:10:41 by adherrer          #+#    #+#             */
+/*   Updated: 2024/08/17 16:10:50 by adherrer         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef PHILO_BONUS_H
 #define PHILO_BONUS_H
 #include <stdio.h>
@@ -37,5 +49,7 @@ typedef struct s_rule
     sem_t *meal_check;
     t_philo philos[200];
 } t_rule;
+
+long long timestamp(void);
 
 #endif

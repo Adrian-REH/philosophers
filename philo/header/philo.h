@@ -1,3 +1,14 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   philo.h                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: adherrer <adherrer@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/08/17 16:09:28 by adherrer          #+#    #+#             */
+/*   Updated: 2024/08/17 16:09:51 by adherrer         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #ifndef PHILO_H
 #define PHILO_H
@@ -32,5 +43,7 @@ typedef struct s_rule
     pthread_mutex_t meal_check;
     t_philo philos[200];
 } t_rule;
+
+long long timestamp(void);
 
 #endif
