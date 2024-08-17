@@ -23,7 +23,7 @@
 typedef struct s_philo
 {
     int id;
-    int x_ate;
+    int nb_eat;
     int l_fork_id;
     int r_fork_id;
     struct s_rule *rule;
@@ -38,12 +38,14 @@ typedef struct s_rule
     int time_think;
     int time_die;
     int nb_philos;
+    int nb_eat;
     int finish;
     pthread_mutex_t forks[200];
     pthread_mutex_t meal_check;
+    pthread_mutex_t writing;
     t_philo philos[200];
 } t_rule;
 
 long long timestamp(void);
-
+void action_print(t_rule *rules, int id, char *string);
 #endif

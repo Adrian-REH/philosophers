@@ -54,7 +54,7 @@ void philosopher(int id, t_philo *philo)
         while (!(rule->finish))
         {
             if ((-i + timestamp()) >= rule->time_eat)
-                break ;
+                break;
             usleep(50);
         }
         sem_post(rule->meal_check);
@@ -65,7 +65,7 @@ void philosopher(int id, t_philo *philo)
         while (!(rule->finish))
         {
             if ((-i + timestamp()) >= rule->time_sleep)
-                break ;
+                break;
             usleep(50);
         }
     }
@@ -73,7 +73,7 @@ void philosopher(int id, t_philo *philo)
     exit(0);
 }
 
-void init(t_rule *rule,char **argv)
+void init(t_rule *rule, char **argv)
 {
     rule->nb_philos = atoi(argv[1]);
     rule->time_die = atoi(argv[2]);
@@ -90,8 +90,10 @@ void init(t_rule *rule,char **argv)
 void ft_finish(t_rule *rule)
 {
     int status;
+    int i;
 
-    for (int i = 0; i < rule->nb_philos; i++)
+    i = 0;
+    while (i < rule->nb_philos)
     {
         waitpid(rule->philos[i].id, &status, 0);
         if (status != 0)
@@ -101,6 +103,7 @@ void ft_finish(t_rule *rule)
                 kill(rule->philos[i].id, 15);
             break;
         }
+        i++;
     }
     sem_close(rule->forks);
     sem_close(rule->meal_check);
