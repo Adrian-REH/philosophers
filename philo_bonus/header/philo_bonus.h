@@ -25,6 +25,7 @@
 
 #define SEM_FORKS "/forks_semaphore"
 #define SEM_MEALCK "/philo_mealcheck"
+#define SEM_WRITING "/philo_writing"
 
 typedef struct s_philo
 {
@@ -47,9 +48,11 @@ typedef struct s_rule
     int finish;
     sem_t *forks;
     sem_t *meal_check;
+    sem_t *writing;
     t_philo philos[200];
 } t_rule;
 
 long long timestamp(void);
+void action_print(t_rule *rules, int id, char *string);
 
 #endif

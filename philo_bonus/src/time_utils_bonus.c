@@ -12,6 +12,18 @@
 
 #include "../header/philo_bonus.h"
 
+void action_print(t_rule *rules, int id, char *string)
+{
+    sem_wait(rules->writing);
+    if (!(rules->finish))
+    {
+        printf("%lli ", timestamp());
+        printf("%i ", id + 1);
+        printf("%s\n", string);
+    }
+    sem_post(rules->writing);
+    return;
+}
 long long timestamp(void)
 {
     struct timeval t;
