@@ -42,7 +42,7 @@ make
 To execute the program:
 
 ```sh
-./philo <number_of_philosophers>  <time_sleep>  <time_eat>  <time_thinking>
+./philo <number_of_philosophers>  <time_sleep>  <time_eat>  <time_die>
 ```
 
 ### Example
