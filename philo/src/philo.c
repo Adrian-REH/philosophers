@@ -37,18 +37,22 @@ void *philosopher(void *v_philo)
         {
             if ((-i + timestamp()) >= rules->time_eat)
                 break;
+            usleep(50);
         }
         philo->nb_eat++;
-        pthread_mutex_unlock(&(rules->forks[philo->l_fork_id]));
         pthread_mutex_unlock(&(rules->forks[philo->r_fork_id]));
+        pthread_mutex_unlock(&(rules->forks[philo->l_fork_id]));
         action_print(rules, philo->id, "is sleep");
         i = timestamp();
         while (!(rules->finish))
         {
             if ((-i + timestamp()) >= rules->time_sleep)
                 break;
+            usleep(50);
         }
         action_print(rules, philo->id, "is thinking");
+        if (rules->nb_eat != 0 && philo->nb_eat >= rules->nb_eat)
+            break;
     }
     return NULL;
 }
@@ -72,8 +76,14 @@ void verify_death(t_rule *rule)
         }
         if (rule->finish)
             break;
-        while (i < rule->nb_philos && rule->philos[i].nb_eat >= rule->nb_eat)
+        i = 0;
+        while (rule->nb_eat != 0 && i < rule->nb_philos && rule->philos[i].nb_eat >= rule->nb_eat)
             i++;
+        if (i == rule->nb_philos)
+        {
+            rule->finish = 1;
+            break;
+        }
     }
 }
 
