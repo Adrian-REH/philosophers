@@ -6,7 +6,7 @@
 /*   By: adherrer <adherrer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/17 16:09:28 by adherrer          #+#    #+#             */
-/*   Updated: 2024/08/18 05:28:52 by adherrer         ###   ########.fr       */
+/*   Updated: 2024/08/19 17:00:34 by adherrer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,10 +39,13 @@ typedef struct s_rule
 	int				nb_philos;
 	int				nb_eat;
 	int				finish;
-	pthread_mutex_t	forks[200];
+	long long		first_timestamp;
+	pthread_mutex_t	*forks;
 	pthread_mutex_t	meal_check;
 	pthread_mutex_t	writing;
-	t_philo			philos[200];
+	pthread_mutex_t	init_philos;
+	pthread_mutex_t	dead_m;
+	t_philo			*philos;
 }	t_rule;
 
 long long	timestamp(void);
@@ -51,5 +54,7 @@ void		check_wait(t_rule *rules, int time);
 void		init_philo(t_rule *rule, int i);
 void		init_resource(t_rule *rule, char **argv);
 void		destroy_resources(t_rule *rule);
+int			ft_atoi(const char *str);
+void		ft_usleep(long long time);
 
 #endif

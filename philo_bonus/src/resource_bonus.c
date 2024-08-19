@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   resource_utils_bonus.c                             :+:      :+:    :+:   */
+/*   resource_bonus.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: adherrer <adherrer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/18 05:40:30 by adherrer          #+#    #+#             */
-/*   Updated: 2024/08/18 05:43:39 by adherrer         ###   ########.fr       */
+/*   Updated: 2024/08/19 14:10:13 by adherrer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,12 +14,22 @@
 
 void	init_resource(t_rule *rule, char **argv)
 {
-	rule->nb_philos = atoi(argv[1]);
-	rule->time_die = atoi(argv[2]);
-	rule->time_eat = atoi(argv[3]);
-	rule->time_sleep = atoi(argv[4]);
+	rule->nb_philos = ft_atoi(argv[1]);
+	rule->time_die = ft_atoi(argv[2]);
+	rule->time_eat = ft_atoi(argv[3]);
+	rule->time_sleep = ft_atoi(argv[4]);
 	rule->time_think = 0;
 	rule->finish = 0;
+	if (rule->nb_philos >= 200)
+		(perror("Error: Arg invalid max n philo"), exit (1));
+	if (argv[5])
+	{
+		rule->nb_eat = ft_atoi(argv[5]);
+		if (rule->nb_eat <= 0)
+			(perror("Error Argumentos"), exit(1));
+	}
+	else
+		rule->nb_eat = 0;
 	sem_unlink(SEM_FORKS);
 	sem_unlink(SEM_MEALCK);
 	sem_unlink(SEM_WRITING);
@@ -52,4 +62,24 @@ void	destroy_resources(t_rule *rule)
 	sem_unlink(SEM_FORKS);
 	sem_unlink(SEM_MEALCK);
 	sem_unlink(SEM_WRITING);
+}
+
+int	ft_atoi(const char *str)
+{
+	int	sign;
+	int	num;
+
+	num = 0;
+	sign = 1;
+	while ((*str <= 13 && *str >= 9) || *str == ' ')
+		str++;
+	if (*str == '-' || *str == '+')
+	{
+		if (*str == '-')
+			sign = -sign;
+		str++;
+	}
+	while (*str >= '0' && *str <= '9')
+		num = num * 10 - 48 + *str++;
+	return (num * sign);
 }

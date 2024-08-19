@@ -6,7 +6,7 @@
 /*   By: adherrer <adherrer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/17 16:10:41 by adherrer          #+#    #+#             */
-/*   Updated: 2024/08/18 05:42:49 by adherrer         ###   ########.fr       */
+/*   Updated: 2024/08/19 13:55:55 by adherrer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@ typedef struct s_philo
 	int				x_ate;
 	int				l_fork_id;
 	int				r_fork_id;
+	int				nb_meal;
 	struct s_rule	*rule;
 	long long		t_last_meal;
 	pid_t			id;
@@ -45,6 +46,7 @@ typedef struct s_rule
 	int		time_die;
 	int		nb_philos;
 	int		finish;
+	int		nb_eat;
 	sem_t	*forks;
 	sem_t	*meal_check;
 	sem_t	*writing;
@@ -56,5 +58,6 @@ void		action_print(t_rule *rules, int id, char *string);
 void		check_wait(t_rule *rules, int time);
 void		init_resource(t_rule *rule, char **argv);
 void		destroy_resources(t_rule *rule);
+int			ft_atoi(const char *str);
 
 #endif
