@@ -6,7 +6,7 @@
 #    By: adherrer <adherrer@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/07/20 12:20:24 by adherrer          #+#    #+#              #
-#    Updated: 2024/08/17 16:53:33 by adherrer         ###   ########.fr        #
+#    Updated: 2024/08/19 18:07:56 by adherrer         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,12 +14,12 @@ NAME = philo
 
 CC = gcc
 
-CFLAGS = -Werror -Wall -Wextra -g
+CFLAGS = -Werror -Wall -Wextra -g3 #-fsanitize=thread 
 
 RM = rm -rf
 
 
-SRCS = 	src/philo.c src/time_util.c
+SRCS = 	src/philo.c src/time_utils.c src/handler_logs.c src/resource_utils.c
 		
 OBJ =  $(SRCS:.c=.o)
 
@@ -43,7 +43,6 @@ clean :
 	@echo "$(CYAN) 🍩 ¡INIT CLEAN! 🍩 $(DEF_COLOR)"
 	$(RM) $(NAME)
 	$(RM) $(OBJ)
-	@echo "$(CYAN) ✨ ¡CLEANED! ✨ $(DEF_COLOR)"
 
 re : fclean all
 

@@ -6,146 +6,114 @@
 /*   By: adherrer <adherrer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/17 16:09:17 by adherrer          #+#    #+#             */
-/*   Updated: 2024/08/17 19:38:54 by adherrer         ###   ########.fr       */
+/*   Updated: 2024/08/19 18:18:03 by adherrer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../header/philo.h"
 
-void *philosopher(void *v_philo)
+int	philo_eat(t_rule *rules, t_philo *philo)
 {
-    t_philo *philo;
-    t_rule *rules;
-    long long i;
-
-    philo = (t_philo *)v_philo;
-    rules = philo->rule;
-    if (philo->id % 2)
-        usleep(15000);
-    while (!(rules->finish))
-    {
-        pthread_mutex_lock(&(rules->forks[philo->r_fork_id]));
-        action_print(rules, philo->id, "has taken a fork");
-        pthread_mutex_lock(&(rules->forks[philo->l_fork_id]));
-        action_print(rules, philo->id, "has taken a fork");
-        pthread_mutex_lock(&(rules->meal_check));
-        philo->t_last_meal = timestamp();
-        action_print(rules, philo->id, "is eating");
-        pthread_mutex_unlock(&(rules->meal_check));
-        i = timestamp();
-        while (!(rules->finish))
-        {
-            if ((-i + timestamp()) >= rules->time_eat)
-                break;
-            usleep(50);
-        }
-        philo->nb_eat++;
-        pthread_mutex_unlock(&(rules->forks[philo->r_fork_id]));
-        pthread_mutex_unlock(&(rules->forks[philo->l_fork_id]));
-        action_print(rules, philo->id, "is sleep");
-        i = timestamp();
-        while (!(rules->finish))
-        {
-            if ((-i + timestamp()) >= rules->time_sleep)
-                break;
-            usleep(50);
-        }
-        action_print(rules, philo->id, "is thinking");
-        if (rules->nb_eat != 0 && philo->nb_eat >= rules->nb_eat)
-            break;
-    }
-    return NULL;
+	pthread_mutex_lock(&(rules->forks[philo->r_fork_id]));
+	action_print(rules, philo->id, "has taken a fork");
+	if (rules->nb_philos == 1)
+		return (pthread_mutex_unlock(&(rules->forks[philo->r_fork_id])), -1);
+	pthread_mutex_lock(&(rules->forks[philo->l_fork_id]));
+	action_print(rules, philo->id, "has taken a fork");
+	pthread_mutex_lock(&(rules->meal_check));
+	philo->t_last_meal = timestamp();
+	pthread_mutex_unlock(&(rules->meal_check));
+	action_print(rules, philo->id, "is eating");
+	check_wait(rules, rules->time_eat);
+	philo->nb_eat++;
+	pthread_mutex_unlock(&(rules->forks[philo->r_fork_id]));
+	pthread_mutex_unlock(&(rules->forks[philo->l_fork_id]));
+	return (0);
 }
 
-void verify_death(t_rule *rule)
+void	*philosopher(void *v_philo)
 {
-    // MURIO?
-    int i;
-    while (1)
-    {
-        i = -1;
-        while (++i < rule->nb_philos && !(rule->finish))
-        {
-            pthread_mutex_lock(&(rule->meal_check));
-            if ((timestamp() - (rule->philos[i].t_last_meal)) >= rule->time_die)
-            {
-                action_print(rule, rule->philos[i].id, "is dead");
-                rule->finish = 1;
-            }
-            pthread_mutex_unlock(&(rule->meal_check));
-        }
-        if (rule->finish)
-            break;
-        i = 0;
-        while (rule->nb_eat != 0 && i < rule->nb_philos && rule->philos[i].nb_eat >= rule->nb_eat)
-            i++;
-        if (i == rule->nb_philos)
-        {
-            rule->finish = 1;
-            break;
-        }
-    }
+	t_philo		*philo;
+	t_rule		*rules;
+
+	philo = (t_philo *)v_philo;
+	rules = philo->rule;
+	pthread_mutex_lock(&(rules->init_philos));
+	pthread_mutex_unlock(&(rules->init_philos));
+	if (philo->id % 2)
+		ft_usleep(40);
+	pthread_mutex_lock(&(rules->dead_m));
+	while (!(rules->finish))
+	{
+		pthread_mutex_unlock(&(rules->dead_m));
+		if(philo_eat(rules, philo) == -1)
+			break;
+		action_print(rules, philo->id, "is sleep");
+		check_wait(rules, rules->time_sleep);
+		action_print(rules, philo->id, "is thinking");
+		if (rules->nb_eat != 0 && philo->nb_eat >= rules->nb_eat)
+			break ;
+		pthread_mutex_lock(&(rules->dead_m));
+	}
+	pthread_mutex_unlock(&(rules->dead_m));
+	return (NULL);
 }
 
-static void init(t_rule *rule, char **argv)
+void	grim_reaper(t_rule *rule)
 {
-    rule->nb_philos = atoi(argv[1]);
-    rule->time_die = atoi(argv[2]);
-    rule->time_eat = atoi(argv[3]);
-    rule->time_sleep = atoi(argv[4]);
-    if (argv[5])
-    {
-        rule->nb_eat = atoi(argv[5]);
-        if (rule->nb_eat <= 0)
-            (perror("Error Argumentos"), exit(1));
-    }
-    else
-        rule->nb_eat = 0;
-    rule->time_think = 0;
-    rule->finish = 0;
-}
-static void ft_finish(t_rule *rule)
-{
-    int i;
-
-    i = -1;
-    while (++i < rule->nb_philos)
-        pthread_join(rule->philos[i].thread_id, NULL);
-    i = -1;
-    while (++i < rule->nb_philos)
-        pthread_mutex_destroy(&rule->forks[i]);
-    pthread_mutex_destroy(&(rule->writing));
-    pthread_mutex_destroy(&(rule->meal_check));
+	int	i;
+	i = -1;
+	while (++i < rule->nb_philos && !(rule->finish))
+	{
+		pthread_mutex_lock(&(rule->meal_check));
+		if ((timestamp() - (rule->philos[i].t_last_meal)) >= rule->time_die)
+		{
+			action_print(rule, rule->philos[i].id, "is dead");
+			//pthread_mutex_lock(&(rule->dead_m));
+			rule->finish = 1;
+			//pthread_mutex_unlock(&(rule->dead_m));
+		}
+		pthread_mutex_unlock(&(rule->meal_check));
+	}
 }
 
-int main(int argc, char **argv)
+void	monitor_philos(t_rule *rule)
 {
-    t_rule rule;
-    int i;
+	int	i;
 
-    if (argc != 5 && argc != 6)
-        return (0);
-    init(&rule, argv);
-    i = 0;
-    while (i < rule.nb_philos)
-    {
-        pthread_mutex_init(&rule.forks[i++], NULL);
-    }
-    if (pthread_mutex_init(&(rule.meal_check), NULL) == -1)
-        return (1);
-    if (pthread_mutex_init(&(rule.writing), NULL) == -1)
-        return (1);
-    i = 0;
-    while (i < rule.nb_philos)
-    {
-        rule.philos[i].id = i;
-        rule.philos[i].rule = &rule;
-        rule.philos[i].nb_eat = 0;
-        rule.philos[i].l_fork_id = i;
-        rule.philos[i].r_fork_id = (i + 1) % rule.nb_philos;
-        rule.philos[i].t_last_meal = timestamp();
-        pthread_create(&rule.philos[i].thread_id, NULL, philosopher, &rule.philos[i]);
-        i++;
-    }
-    return (verify_death(&rule), ft_finish(&rule), 0);
+	while (1)
+	{
+		grim_reaper(rule);
+		if (rule->finish)
+			break ;
+		i = 0;
+		while (rule->nb_eat != 0 && i < rule->nb_philos \
+		&& rule->philos[i].nb_eat >= rule->nb_eat)
+			i++;
+		if (i == rule->nb_philos)
+		{
+			rule->finish = 1;
+			break ;
+		}
+	}
+}
+
+int	main(int argc, char **argv)
+{
+	t_rule	r;
+	int		i;
+
+	if (argc != 5 && argc != 6)
+		return (0);
+	init_resource(&r, argv);
+	i = -1;
+	pthread_mutex_lock(&(r.init_philos));
+	while (++i < r.nb_philos)
+	{
+		init_philo(&r, i);
+		pthread_create(&r.philos[i].thread_id, NULL, philosopher, &r.philos[i]);
+	}
+	r.first_timestamp = timestamp();
+	pthread_mutex_unlock(&(r.init_philos));
+	return (monitor_philos(&r), destroy_resources(&r), 0);
 }

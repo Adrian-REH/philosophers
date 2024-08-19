@@ -6,7 +6,7 @@
 #    By: adherrer <adherrer@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/07/20 12:20:24 by adherrer          #+#    #+#              #
-#    Updated: 2024/08/17 16:32:18 by adherrer         ###   ########.fr        #
+#    Updated: 2024/08/18 05:45:00 by adherrer         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -19,7 +19,7 @@ CFLAGS = -Werror -Wall -Wextra
 
 RM = rm -rf		
 
-SRCS_BONUS = 	src/philo_bonus.c src/time_utils_bonus.c
+SRCS_BONUS = 	src/philo_bonus.c src/time_bonus.c src/resource_bonus.c src/handler_logs_bonus.c
 
 
 
