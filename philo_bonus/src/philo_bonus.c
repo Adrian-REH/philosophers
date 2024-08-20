@@ -12,12 +12,13 @@
 
 #include "../header/philo_bonus.h"
 
-void	grim_reaper(t_philo *philo)
+void grim_reaper(t_philo *philo)
 {
 	sem_wait(philo->rule->meal_check);
 	if ((timestamp() - (philo->t_last_meal)) >= philo->rule->time_die)
 	{
-		action_print(philo, "died");
+		printf("SE MUERE : %d | %lld | %lld\n", philo->id + 1, timestamp() - (philo->t_last_meal), (philo->t_last_meal) - philo->rule->first_timestamp);
+		action_print(philo, "is dead");
 		sem_wait(philo->rule->writing);
 		philo->rule->finish = 1;
 		exit(1);
@@ -25,11 +26,11 @@ void	grim_reaper(t_philo *philo)
 	sem_post(philo->rule->meal_check);
 }
 
-void	*monitor_philo(void *v_philo)
+void *monitor_philo(void *v_philo)
 {
-	t_philo	*philo;
-	t_rule	*rule;
-	int		i;
+	t_philo *philo;
+	t_rule *rule;
+	int i;
 
 	rule = ((philo = (t_philo *)v_philo), philo->rule);
 	while (1)
@@ -37,10 +38,10 @@ void	*monitor_philo(void *v_philo)
 		grim_reaper(philo);
 		if (rule->finish)
 			exit(1);
-		ft_usleep(10);
+		ft_usleep(1);
 		i = 0;
-		while (rule->nb_eat != 0 && i < rule->nb_philos && \
-		rule->philos[i].nb_meal >= rule->nb_eat)
+		while (rule->nb_eat != 0 && i < rule->nb_philos &&
+			   rule->philos[i].nb_meal >= rule->nb_eat)
 			i++;
 		if (i == rule->nb_philos)
 		{
@@ -51,9 +52,9 @@ void	*monitor_philo(void *v_philo)
 	return (NULL);
 }
 
-void	philo_eat(t_philo *philo)
+void philo_eat(t_philo *philo)
 {
-	//ft_usleep(1);
+	ft_usleep(1);
 	sem_wait(philo->rule->forks);
 	action_print(philo, "has taken a fork");
 	sem_wait(philo->rule->forks);
@@ -68,9 +69,9 @@ void	philo_eat(t_philo *philo)
 	sem_post(philo->rule->forks);
 }
 
-void	philosopher(t_philo *philo)
+void philosopher(t_philo *philo)
 {
-	t_rule	*rule;
+	t_rule *rule;
 
 	rule = philo->rule;
 	philo->t_last_meal = timestamp();
@@ -93,16 +94,16 @@ void	philosopher(t_philo *philo)
 	exit(1);
 }
 
-int	main(int argc, char **argv)
+int main(int argc, char **argv)
 {
-	t_rule	rule;
-	int		i;
+	t_rule rule;
+	int i;
 
 	if (argc != 5 && argc != 6)
 		return (0);
 	init_resource(&rule, argv);
-	if (rule.forks == SEM_FAILED || rule.meal_check == SEM_FAILED || \
-	rule.writing == SEM_FAILED || rule.dead == SEM_FAILED)
+	if (rule.forks == SEM_FAILED || rule.meal_check == SEM_FAILED ||
+		rule.writing == SEM_FAILED || rule.dead == SEM_FAILED)
 		(perror("sem_open failed"), exit(EXIT_FAILURE));
 	i = -1;
 	rule.first_timestamp = timestamp();
