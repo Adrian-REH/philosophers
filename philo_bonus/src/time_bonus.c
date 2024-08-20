@@ -29,7 +29,7 @@ void check_wait(t_rule *rule, int time)
 	{
 		if ((-i + timestamp()) >= time)
 			break;
-		usleep(150);
+		usleep(50);
 	}
 	return;
 }
