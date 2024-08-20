@@ -12,15 +12,19 @@
 
 #include "../header/philo.h"
 
-void	action_print(t_rule *rules, int id, char *string)
+void action_print(t_rule *rules, int id, char *string)
 {
 	pthread_mutex_lock(&(rules->writing));
+	pthread_mutex_lock(&(rules->dead_m));
 	if (!(rules->finish))
 	{
+		pthread_mutex_unlock(&(rules->dead_m));
 		printf("%lli ", timestamp() - rules->first_timestamp);
 		printf("%i ", id + 1);
 		printf("%s\n", string);
 	}
+	else
+		pthread_mutex_unlock(&(rules->dead_m));
 	pthread_mutex_unlock(&(rules->writing));
-	return ;
+	return;
 }

@@ -35,11 +35,15 @@ void check_wait(t_rule *rule, int time)
 	long long i;
 
 	i = timestamp();
+	pthread_mutex_lock(&(rule->dead_m));
 	while (!(rule->finish))
 	{
+		pthread_mutex_unlock(&(rule->dead_m));
 		if ((-i + timestamp()) >= time)
 			break;
 		usleep(50);
+		pthread_mutex_lock(&(rule->dead_m));
 	}
+	pthread_mutex_unlock(&(rule->dead_m));
 	return;
 }
