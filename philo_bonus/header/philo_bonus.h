@@ -6,7 +6,7 @@
 /*   By: adherrer <adherrer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/17 16:10:41 by adherrer          #+#    #+#             */
-/*   Updated: 2024/08/19 13:55:55 by adherrer         ###   ########.fr       */
+/*   Updated: 2024/08/20 02:39:58 by adherrer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,8 @@
 # define SEM_FORKS "/forks_semaphore"
 # define SEM_MEALCK "/philo_mealcheck"
 # define SEM_WRITING "/philo_writing"
+# define SEM_DEAD "/philo_dead"
+# define SEM_INIT "/philo_init"
 
 typedef struct s_philo
 {
@@ -34,30 +36,35 @@ typedef struct s_philo
 	int				nb_meal;
 	struct s_rule	*rule;
 	long long		t_last_meal;
-	pid_t			id;
+	int			id;
+	pid_t			pid;
 	pthread_t		death_check;
 }					t_philo;
 
 typedef struct s_rule
 {
-	int		time_eat;
-	int		time_sleep;
-	int		time_think;
-	int		time_die;
-	int		nb_philos;
-	int		finish;
-	int		nb_eat;
-	sem_t	*forks;
-	sem_t	*meal_check;
-	sem_t	*writing;
-	t_philo	philos[200];
+	int			time_eat;
+	int			time_sleep;
+	int			time_think;
+	int			time_die;
+	int			nb_philos;
+	int			finish;
+	int			nb_eat;
+	long long	first_timestamp;
+	sem_t		*forks;
+	sem_t		*dead;
+	sem_t		*init;
+	sem_t		*meal_check;
+	sem_t		*writing;
+	t_philo		*philos;
 }			t_rule;
 
 long long	timestamp(void);
-void		action_print(t_rule *rules, int id, char *string);
+void		action_print(t_philo *philo, char *string);
 void		check_wait(t_rule *rules, int time);
 void		init_resource(t_rule *rule, char **argv);
 void		destroy_resources(t_rule *rule);
 int			ft_atoi(const char *str);
+void		ft_usleep(long long time);
 
 #endif

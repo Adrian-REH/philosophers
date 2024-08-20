@@ -6,7 +6,7 @@
 /*   By: adherrer <adherrer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/17 16:09:17 by adherrer          #+#    #+#             */
-/*   Updated: 2024/08/19 18:18:03 by adherrer         ###   ########.fr       */
+/*   Updated: 2024/08/20 01:35:45 by adherrer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,8 +46,8 @@ void	*philosopher(void *v_philo)
 	while (!(rules->finish))
 	{
 		pthread_mutex_unlock(&(rules->dead_m));
-		if(philo_eat(rules, philo) == -1)
-			break;
+		if (philo_eat(rules, philo) == -1)
+			break ;
 		action_print(rules, philo->id, "is sleep");
 		check_wait(rules, rules->time_sleep);
 		action_print(rules, philo->id, "is thinking");
@@ -62,6 +62,7 @@ void	*philosopher(void *v_philo)
 void	grim_reaper(t_rule *rule)
 {
 	int	i;
+
 	i = -1;
 	while (++i < rule->nb_philos && !(rule->finish))
 	{
@@ -69,9 +70,9 @@ void	grim_reaper(t_rule *rule)
 		if ((timestamp() - (rule->philos[i].t_last_meal)) >= rule->time_die)
 		{
 			action_print(rule, rule->philos[i].id, "is dead");
-			//pthread_mutex_lock(&(rule->dead_m));
+			pthread_mutex_lock(&(rule->dead_m));
 			rule->finish = 1;
-			//pthread_mutex_unlock(&(rule->dead_m));
+			pthread_mutex_unlock(&(rule->dead_m));
 		}
 		pthread_mutex_unlock(&(rule->meal_check));
 	}
