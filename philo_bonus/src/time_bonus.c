@@ -20,6 +20,16 @@ long long timestamp(void)
 	return ((t.tv_sec * 1000) + (t.tv_usec / 1000));
 }
 
+/* Same as usleep but more precise with big numbers */
+void ft_usleep(long long time)
+{
+	long long start;
+
+	start = timestamp();
+	while (timestamp() < start + time)
+		usleep(9);
+}
+
 void check_wait(t_rule *rule, int time)
 {
 	long long i;
