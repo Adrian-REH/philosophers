@@ -6,21 +6,21 @@
 /*   By: adherrer <adherrer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/18 05:39:05 by adherrer          #+#    #+#             */
-/*   Updated: 2024/08/18 05:43:29 by adherrer         ###   ########.fr       */
+/*   Updated: 2024/08/20 03:07:21 by adherrer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../header/philo_bonus.h"
 
-void	action_print(t_rule *rules, int id, char *string)
+void	action_print(t_philo *philo, char *string)
 {
-	sem_wait(rules->writing);
-	if (!(rules->finish))
+	sem_wait(philo->rule->writing);
+	if (!(philo->rule->finish))
 	{
-		printf("%lli ", timestamp());
-		printf("%i ", id + 1);
+		printf("%lli ", timestamp() - philo->rule->first_timestamp);
+		printf("%i ", philo->id + 1);
 		printf("%s\n", string);
 	}
-	sem_post(rules->writing);
+	sem_post(philo->rule->writing);
 	return ;
 }
