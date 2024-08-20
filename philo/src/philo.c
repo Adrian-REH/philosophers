@@ -42,10 +42,8 @@ void *philosopher(void *v_philo)
 	pthread_mutex_unlock(&(rules->init_philos));
 	if (philo->id % 2)
 		ft_usleep(50);
-	pthread_mutex_lock(&(rules->dead_m));
 	while (!(rules->finish))
 	{
-		pthread_mutex_unlock(&(rules->dead_m));
 		if (philo_eat(rules, philo) == -1)
 			break;
 		action_print(rules, philo->id, "is sleep");
@@ -53,9 +51,7 @@ void *philosopher(void *v_philo)
 		action_print(rules, philo->id, "is thinking");
 		if (rules->nb_eat != 0 && philo->nb_eat >= rules->nb_eat)
 			break;
-		pthread_mutex_lock(&(rules->dead_m));
 	}
-	pthread_mutex_unlock(&(rules->dead_m));
 	return (NULL);
 }
 
