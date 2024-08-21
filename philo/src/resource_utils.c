@@ -12,7 +12,7 @@
 
 #include "../header/philo.h"
 
-void init_resource(t_rule *rule, char **argv)
+int init_resource(t_rule *rule, char **argv)
 {
 	int i;
 
@@ -21,12 +21,12 @@ void init_resource(t_rule *rule, char **argv)
 	rule->time_eat = ft_atoi(argv[3]);
 	rule->time_sleep = ft_atoi(argv[4]);
 	if (rule->nb_philos <= 0 || rule->nb_philos > 200 || rule->time_die < 60 || rule->time_sleep < 60 || rule->time_eat < 60)
-		(printf("Error: Arg invalid\n"), exit(0));
+		return (printf("Error: Arg invalid\n"), (-1));
 	if (argv[5])
 	{
 		rule->nb_eat = ft_atoi(argv[5]);
 		if (rule->nb_eat <= 0)
-			(printf("Error Argumentos\n"), exit(0));
+			return (printf("Error Argumentos\n"), (-1));
 	}
 	else
 		rule->nb_eat = 0;
@@ -35,10 +35,12 @@ void init_resource(t_rule *rule, char **argv)
 	rule->philos = (t_philo *)malloc((rule->nb_philos + 1) * sizeof(t_philo));
 	while (i < rule->nb_philos)
 		pthread_mutex_init(&rule->forks[i++], NULL);
-	pthread_mutex_init(&(rule->init_philos), NULL);
+	;
 	if (pthread_mutex_init(&(rule->meal_check), NULL) == -1 ||
-		pthread_mutex_init(&(rule->writing), NULL) == -1)
-		(printf("Error init mutex\n"), exit(1));
+		pthread_mutex_init(&(rule->writing), NULL) == -1 ||
+		pthread_mutex_init(&(rule->init_philos), NULL))
+		return (printf("Error init mutex\n"), (-1));
+	return (0);
 }
 
 void init_philo(t_rule *rule, int i)

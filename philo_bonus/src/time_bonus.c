@@ -27,7 +27,7 @@ void ft_usleep(long long time)
 
 	start = timestamp();
 	while (timestamp() < start + time)
-		usleep(9);
+		usleep(10);
 }
 
 void check_wait(t_rule *rule, int time)

@@ -99,7 +99,8 @@ int main(int argc, char **argv)
 
 	if (argc != 5 && argc != 6)
 		return (0);
-	init_resource(&r, argv);
+	if (init_resource(&r, argv) == -1)
+		return (0);
 	i = -1;
 	pthread_mutex_lock(&(r.init_philos));
 	while (++i < r.nb_philos)
