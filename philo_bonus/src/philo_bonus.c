@@ -78,17 +78,14 @@ void philosopher(t_philo *philo)
 	pthread_create(&(philo->death_check), NULL, monitor_philo, philo);
 	if (philo->id % 2)
 		ft_usleep(40);
-	sem_wait(rule->dead);
 	while (!(rule->finish))
 	{
-		sem_post(rule->dead);
 		philo_eat(philo);
 		action_print(philo, "is sleep");
 		check_wait(rule, rule->time_sleep);
 		action_print(philo, "is thinking");
 		if (rule->nb_eat != 0 && philo->nb_meal >= rule->nb_eat)
 			exit(0);
-		sem_wait(rule->dead);
 	}
 	pthread_join(philo->death_check, NULL);
 	exit(1);
@@ -103,7 +100,7 @@ int main(int argc, char **argv)
 		return (0);
 	init_resource(&rule, argv);
 	if (rule.forks == SEM_FAILED || rule.meal_check == SEM_FAILED ||
-		rule.writing == SEM_FAILED || rule.dead == SEM_FAILED)
+		rule.writing == SEM_FAILED)
 		(perror("sem_open failed"), exit(EXIT_FAILURE));
 	i = -1;
 	rule.first_timestamp = timestamp();

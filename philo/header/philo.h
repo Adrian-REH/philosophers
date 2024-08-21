@@ -44,7 +44,6 @@ typedef struct s_rule
 	pthread_mutex_t meal_check;
 	pthread_mutex_t writing;
 	pthread_mutex_t init_philos;
-	pthread_mutex_t dead_m;
 	t_philo *philos;
 } t_rule;
 
