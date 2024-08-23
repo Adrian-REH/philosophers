@@ -6,18 +6,17 @@
 /*   By: adherrer <adherrer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/17 16:10:29 by adherrer          #+#    #+#             */
-/*   Updated: 2024/08/20 03:30:01 by adherrer         ###   ########.fr       */
+/*   Updated: 2024/08/23 19:02:20 by adherrer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../header/philo_bonus.h"
 
-void grim_reaper(t_philo *philo)
+void	grim_reaper(t_philo *philo)
 {
 	sem_wait(philo->rule->meal_check);
 	if ((timestamp() - (philo->t_last_meal)) >= philo->rule->time_die)
 	{
-		printf("SE MUERE : %d | %lld | %lld\n", philo->id + 1, timestamp() - (philo->t_last_meal), (philo->t_last_meal) - philo->rule->first_timestamp);
 		action_print(philo, "is dead");
 		sem_wait(philo->rule->writing);
 		philo->rule->finish = 1;
@@ -26,11 +25,11 @@ void grim_reaper(t_philo *philo)
 	sem_post(philo->rule->meal_check);
 }
 
-void *monitor_philo(void *v_philo)
+void	*monitor_philo(void *v_philo)
 {
-	t_philo *philo;
-	t_rule *rule;
-	int i;
+	t_philo	*philo;
+	t_rule	*rule;
+	int		i;
 
 	rule = ((philo = (t_philo *)v_philo), philo->rule);
 	while (1)
@@ -40,8 +39,8 @@ void *monitor_philo(void *v_philo)
 			exit(1);
 		ft_usleep(1);
 		i = 0;
-		while (rule->nb_eat != 0 && i < rule->nb_philos &&
-			   rule->philos[i].nb_meal >= rule->nb_eat)
+		while (rule->nb_eat != 0 && i < rule->nb_philos && \
+			rule->philos[i].nb_meal >= rule->nb_eat)
 			i++;
 		if (i == rule->nb_philos)
 		{
@@ -52,7 +51,7 @@ void *monitor_philo(void *v_philo)
 	return (NULL);
 }
 
-void philo_eat(t_philo *philo)
+void	philo_eat(t_philo *philo)
 {
 	ft_usleep(1);
 	sem_wait(philo->rule->forks);
@@ -69,9 +68,9 @@ void philo_eat(t_philo *philo)
 	sem_post(philo->rule->forks);
 }
 
-void philosopher(t_philo *philo)
+void	philosopher(t_philo *philo)
 {
-	t_rule *rule;
+	t_rule	*rule;
 
 	rule = philo->rule;
 	philo->t_last_meal = timestamp();
@@ -91,15 +90,15 @@ void philosopher(t_philo *philo)
 	exit(1);
 }
 
-int main(int argc, char **argv)
+int	main(int argc, char **argv)
 {
-	t_rule rule;
-	int i;
+	t_rule	rule;
+	int		i;
 
 	if (argc != 5 && argc != 6)
 		return (0);
 	init_resource(&rule, argv);
-	if (rule.forks == SEM_FAILED || rule.meal_check == SEM_FAILED ||
+	if (rule.forks == SEM_FAILED || rule.meal_check == SEM_FAILED || \
 		rule.writing == SEM_FAILED)
 		(perror("sem_open failed"), exit(EXIT_FAILURE));
 	i = -1;

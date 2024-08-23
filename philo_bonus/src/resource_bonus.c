@@ -6,18 +6,19 @@
 /*   By: adherrer <adherrer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/18 05:40:30 by adherrer          #+#    #+#             */
-/*   Updated: 2024/08/20 03:21:24 by adherrer         ###   ########.fr       */
+/*   Updated: 2024/08/23 19:01:10 by adherrer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../header/philo_bonus.h"
 
-void init_resource(t_rule *rule, char **argv)
+void	init_resource(t_rule *rule, char **argv)
 {
 	rule->time_die = ((rule->nb_philos = ft_atoi(argv[1])), ft_atoi(argv[2]));
 	rule->time_sleep = ((rule->time_eat = ft_atoi(argv[3])), ft_atoi(argv[4]));
 	rule->finish = ((rule->time_think = 0), 0);
-	if (rule->nb_philos <= 0 || rule->nb_philos > 200 || rule->time_die < 60 || rule->time_sleep < 60 || rule->time_eat < 60)
+	if (rule->nb_philos <= 0 || rule->nb_philos > 200 || \
+	rule->time_die < 60 || rule->time_sleep < 60 || rule->time_eat < 60)
 		(printf("Error: Arg invalid\n"), exit(0));
 	if (argv[5])
 	{
@@ -36,10 +37,10 @@ void init_resource(t_rule *rule, char **argv)
 	rule->init = sem_open(SEM_INIT, O_CREAT, 0644, 1);
 }
 
-void destroy_resources(t_rule *rule)
+void	destroy_resources(t_rule *rule)
 {
-	int status;
-	int i;
+	int	status;
+	int	i;
 
 	i = 0;
 	while (i < rule->nb_philos)
@@ -50,7 +51,7 @@ void destroy_resources(t_rule *rule)
 			i = -1;
 			while (++i < rule->nb_philos)
 				kill(rule->philos[i].pid, 15);
-			break;
+			break ;
 		}
 		i++;
 	}
@@ -64,10 +65,10 @@ void destroy_resources(t_rule *rule)
 	free(rule->philos);
 }
 
-int ft_atoi(const char *str)
+int	ft_atoi(const char *str)
 {
-	int sign;
-	int num;
+	int	sign;
+	int	num;
 
 	num = 0;
 	sign = 1;

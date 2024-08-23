@@ -6,13 +6,13 @@
 /*   By: adherrer <adherrer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/17 16:09:17 by adherrer          #+#    #+#             */
-/*   Updated: 2024/08/20 01:35:45 by adherrer         ###   ########.fr       */
+/*   Updated: 2024/08/23 19:10:16 by adherrer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../header/philo.h"
 
-int philo_eat(t_rule *rules, t_philo *philo)
+int	philo_eat(t_rule *rules, t_philo *philo)
 {
 	pthread_mutex_lock(&(rules->forks[philo->r_fork_id]));
 	action_print(rules, philo->id, "has taken a fork");
@@ -31,10 +31,10 @@ int philo_eat(t_rule *rules, t_philo *philo)
 	return (0);
 }
 
-void *philosopher(void *v_philo)
+void	*philosopher(void *v_philo)
 {
-	t_philo *philo;
-	t_rule *rules;
+	t_philo	*philo;
+	t_rule	*rules;
 
 	philo = (t_philo *)v_philo;
 	rules = philo->rule;
@@ -45,19 +45,19 @@ void *philosopher(void *v_philo)
 	while (!(rules->finish))
 	{
 		if (philo_eat(rules, philo) == -1)
-			break;
+			break ;
 		action_print(rules, philo->id, "is sleep");
 		check_wait(rules, rules->time_sleep);
 		action_print(rules, philo->id, "is thinking");
 		if (rules->nb_eat != 0 && philo->nb_eat >= rules->nb_eat)
-			break;
+			break ;
 	}
 	return (NULL);
 }
 
-void grim_reaper(t_rule *rule)
+void	grim_reaper(t_rule *rule)
 {
-	int i;
+	int	i;
 
 	i = -1;
 	while (++i < rule->nb_philos && !(rule->finish))
@@ -72,30 +72,31 @@ void grim_reaper(t_rule *rule)
 	}
 }
 
-void monitor_philos(t_rule *rule)
+void	monitor_philos(t_rule *rule)
 {
-	int i;
+	int	i;
 
 	while (1)
 	{
 		grim_reaper(rule);
 		if (rule->finish)
-			return;
+			return ;
 		i = 0;
-		while (rule->nb_eat != 0 && i < rule->nb_philos && rule->philos[i].nb_eat >= rule->nb_eat)
+		while (rule->nb_eat != 0 && i < rule->nb_philos && \
+		rule->philos[i].nb_eat >= rule->nb_eat)
 			i++;
 		if (i == rule->nb_philos)
 		{
 			rule->finish = 1;
-			break;
+			break ;
 		}
 	}
 }
 
-int main(int argc, char **argv)
+int	main(int argc, char **argv)
 {
-	t_rule r;
-	int i;
+	t_rule	r;
+	int		i;
 
 	if (argc != 5 && argc != 6)
 		return (0);
