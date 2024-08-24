@@ -6,7 +6,7 @@
 /*   By: adherrer <adherrer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/17 16:10:59 by adherrer          #+#    #+#             */
-/*   Updated: 2024/08/23 18:59:54 by adherrer         ###   ########.fr       */
+/*   Updated: 2024/08/24 00:22:24 by adherrer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,16 +30,16 @@ void	ft_usleep(long long time)
 		usleep(10);
 }
 
-void	check_wait(t_rule *rule, int time)
+void	check_wait(t_philo *philo, int time)
 {
 	long long	i;
 
 	i = timestamp();
-	while (!(rule->finish))
+	while (grim_reaper(philo))
 	{
 		if ((-i + timestamp()) >= time)
 			break ;
-		usleep(50);
+		usleep(100);
 	}
 	return ;
 }
