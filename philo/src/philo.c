@@ -6,7 +6,7 @@
 /*   By: adherrer <adherrer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/17 16:09:17 by adherrer          #+#    #+#             */
-/*   Updated: 2024/08/27 17:20:46 by adherrer         ###   ########.fr       */
+/*   Updated: 2024/08/27 18:23:35 by adherrer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,7 +96,7 @@ int	main(int argc, char **argv)
 	int		i;
 
 	if (argc != 5 && argc != 6)
-		return (0);
+		return (1);
 	if (init_resource(&r, argv) == -1)
 		return (0);
 	i = -1;

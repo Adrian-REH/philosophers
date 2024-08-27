@@ -6,7 +6,7 @@
 /*   By: adherrer <adherrer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/17 16:10:29 by adherrer          #+#    #+#             */
-/*   Updated: 2024/08/27 17:18:45 by adherrer         ###   ########.fr       */
+/*   Updated: 2024/08/27 18:23:21 by adherrer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,7 @@ void	philo_eat(t_philo *philo)
 	ft_usleep(1);
 	sem_wait(philo->rule->forks);
 	action_print(philo, "has taken a fork");
+	ft_usleep(1);
 	sem_wait(philo->rule->forks);
 	action_print(philo, "has taken a fork");
 	sem_wait(philo->rule->meal_check);
@@ -50,7 +51,7 @@ void	*verify_death(void *arg)
 
 	philo = (t_philo *)arg;
 	while (grim_reaper(philo) != -1)
-		usleep(1000);
+		usleep(100);
 	free(philo->rule->pid);
 	exit(1);
 	return (NULL);
@@ -65,7 +66,7 @@ void	philosopher(t_philo *philo)
 	philo->t_last_meal = timestamp();
 	pthread_create(&thread, NULL, verify_death, philo);
 	if (philo->id % 2)
-		usleep(10000);
+		ft_usleep(50);
 	while (1)
 	{
 		philo_eat(philo);
@@ -73,7 +74,7 @@ void	philosopher(t_philo *philo)
 		check_wait(philo, rule->time_sleep);
 		action_print(philo, "is thinking");
 		if (rule->nb_eat != 0 && philo->nb_meal >= rule->nb_eat)
-			exit(0);
+			(pthread_join(thread, NULL), exit(0));
 	}
 	pthread_join(thread, NULL);
 	exit(1);
@@ -85,7 +86,7 @@ int	main(int argc, char **argv)
 	int		i;
 
 	if (argc != 5 && argc != 6)
-		return (0);
+		return (1);
 	init_resource(&rule, argv);
 	if (rule.forks == SEM_FAILED || rule.meal_check == SEM_FAILED || \
 		rule.writing == SEM_FAILED)
