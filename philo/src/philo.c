@@ -6,7 +6,7 @@
 /*   By: adherrer <adherrer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/17 16:09:17 by adherrer          #+#    #+#             */
-/*   Updated: 2024/08/24 21:18:43 by adherrer         ###   ########.fr       */
+/*   Updated: 2024/08/27 17:20:46 by adherrer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,11 +54,11 @@ int	grim_reaper(t_rule *rule)
 			printf("%lli ", timestamp() - rule->first_timestamp);
 			printf("%i ", rule->philos->id + 1);
 			printf("%s\n", "is dead");
-			pthread_mutex_unlock(&(rule->writing));
 			pthread_mutex_lock(&(rule->died));
 			rule->finish = 1;
-			pthread_mutex_unlock(&(rule->died));
 			pthread_mutex_unlock(&(rule->meal_check));
+			pthread_mutex_unlock(&(rule->writing));
+			pthread_mutex_unlock(&(rule->died));
 			return (-1);
 		}
 		pthread_mutex_unlock(&(rule->meal_check));

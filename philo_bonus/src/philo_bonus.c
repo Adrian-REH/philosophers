@@ -6,7 +6,7 @@
 /*   By: adherrer <adherrer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/17 16:10:29 by adherrer          #+#    #+#             */
-/*   Updated: 2024/08/24 15:12:32 by adherrer         ###   ########.fr       */
+/*   Updated: 2024/08/27 17:18:45 by adherrer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,7 @@ void	*verify_death(void *arg)
 	philo = (t_philo *)arg;
 	while (grim_reaper(philo) != -1)
 		usleep(1000);
+	free(philo->rule->pid);
 	exit(1);
 	return (NULL);
 }

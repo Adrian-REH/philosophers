@@ -6,7 +6,7 @@
 /*   By: adherrer <adherrer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/18 05:40:30 by adherrer          #+#    #+#             */
-/*   Updated: 2024/08/24 21:14:22 by adherrer         ###   ########.fr       */
+/*   Updated: 2024/08/27 17:19:00 by adherrer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,6 +81,7 @@ void	destroy_resources(t_rule *rule)
 	sem_close(rule->writing);
 	sem_unlink(SEM_FORKS);
 	(sem_unlink(SEM_MEALCK), sem_unlink(SEM_WRITING));
+	free(rule->pid);
 }
 
 int	ft_atoi(const char *str)
