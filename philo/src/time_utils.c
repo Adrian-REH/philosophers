@@ -6,7 +6,7 @@
 /*   By: adherrer <adherrer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/17 16:09:13 by adherrer          #+#    #+#             */
-/*   Updated: 2024/08/23 19:09:16 by adherrer         ###   ########.fr       */
+/*   Updated: 2024/08/24 21:12:44 by adherrer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,11 +35,18 @@ void	check_wait(t_rule *rule, int time)
 	long long	i;
 
 	i = timestamp();
-	while (!(rule->finish))
+	while (1)
 	{
+		pthread_mutex_lock(&(rule->died));
+		if ((rule->finish))
+		{
+			pthread_mutex_unlock(&(rule->died));
+			return ;
+		}
+		pthread_mutex_unlock(&(rule->died));
 		if ((-i + timestamp()) >= time)
 			break ;
-		usleep(50);
+		usleep(100);
 	}
 	return ;
 }

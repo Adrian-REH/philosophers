@@ -1,23 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   handler_logs_bonus.c                               :+:      :+:    :+:   */
+/*   ft_nbr.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: adherrer <adherrer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/08/18 05:39:05 by adherrer          #+#    #+#             */
-/*   Updated: 2024/08/24 00:25:51 by adherrer         ###   ########.fr       */
+/*   Created: 2024/08/24 00:55:27 by adherrer          #+#    #+#             */
+/*   Updated: 2024/08/24 21:14:40 by adherrer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../header/philo_bonus.h"
-
-void	action_print(t_philo *philo, char *string)
+int	ft_nbr(char **argv)
 {
-	sem_wait(philo->rule->writing);
-	printf("%lli ", timestamp() - philo->rule->first_timestamp);
-	printf("%i ", philo->id + 1);
-	printf("%s\n", string);
-	sem_post(philo->rule->writing);
-	return ;
+	int	i;
+	int	j;
+
+	i = 1;
+	j = 0;
+	while (argv[i])
+	{
+		j = -1;
+		while (argv[i][++j])
+		{
+			if (!(argv[i][j] >= '0' && argv[i][j] <= '9'))
+				return (1);
+		}
+		i++;
+	}
+	return (0);
 }
