@@ -50,7 +50,25 @@ To execute the program:
 ```sh
 ./philo 5 1000 1000 1000
 ```
-
+### Test
+```sh
+./philo 21 301 100 100
+```
+```sh
+./philo 3 310 103 103
+```
+```sh
+./philo 2 130 60 60
+```
+```sh
+./philo 200 700 200 200
+```
+```sh
+./philo 1 700 200 200
+```
+```sh
+./philo 1 700 200 200
+```
 ## Contributing
 
 1. Fork the repository
