@@ -51,6 +51,7 @@ To execute the program:
 ./philo 5 1000 1000 1000
 ```
 ### Test
+No one should die
 ```sh
 ./philo 21 301 100 100
 ```
