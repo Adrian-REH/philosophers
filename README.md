@@ -64,12 +64,13 @@ No one should die
 ```sh
 ./philo 200 700 200 200
 ```
+
+One should die
+
 ```sh
 ./philo 1 700 200 200
 ```
-```sh
-./philo 1 700 200 200
-```
+
 ## Contributing
 
 1. Fork the repository
